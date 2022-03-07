@@ -1,0 +1,5 @@
+rootProject.name = "DEMO"
+include ':app'
+include ':module_login'
+include ':module_main'
+include ':library_base'

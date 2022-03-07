@@ -1,0 +1,55 @@
+if (isRelease.toBoolean()) {
+    apply plugin: 'com.android.library'
+} else {
+    apply plugin: 'com.android.application'
+}
+def build = dep.build
+android {
+    compileSdkVersion build.compileSdkVersion
+    buildToolsVersion build.buildToolsVersion
+
+    defaultConfig {
+        if (!isRelease.toBoolean()) {
+            applicationId "com.glde.dlr.module_login"
+        }
+        minSdkVersion build.minSdkVersion
+        targetSdkVersion build.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility build.VERSION_1_8
+        targetCompatibility build.VERSION_1_8
+    }
+    sourceSets {
+        //解决资源冲突问题，比如调试的时候（应用模块）有application，
+        // 与library（发版后的集成到app模块后变成lib）的application冲突
+        main {
+            if (isRelease.toBoolean()) {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            } else {
+                manifest.srcFile 'src/main/debug/AndroidManifest.xml'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation dep.android_support.support
+    implementation dep.android_support.appcompat
+    implementation dep.android_support.constraint
+    androidTestImplementation dep.support_test.runner
+    androidTestImplementation dep.support_test.espresso
+    dep.dependice.other.each{
+        implementation project(it)
+    }
+}
